@@ -16,7 +16,7 @@ with each other.
 # Install
 
 Just download
-[i3-wk-switch.py](https://github.com/tmfink/i3-wk-switch/blob/master/i3-wk-switch.py)
+[i3-wk-switch.py](https://raw.githubusercontent.com/tmfink/i3-wk-switch/master/i3-wk-switch.py)
 and modify your i3 config to call `i3-wk-switch.py` when the workspace switching
 keys are pressed.
 
