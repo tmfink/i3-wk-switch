@@ -67,11 +67,15 @@ def change_workspace(num):
     Always sets focused output to workspace num. If the workspace is on
     another output, then the workspaces are "shifted" among the outputs.
     """
+    # Allow for string or int type for argument
     num = int(num)
     LOG.debug('Switching to workspace %d', num)
 
     focused_workspace = get_focused_workspace()
     LOG.debug('Focused workspace:\n' + pformat(focused_workspace))
+
+    original_output = focused_workspace['output']
+    LOG.debug('Current output: %s', original_output)
 
     # Check if already on workspace
     if int(focused_workspace['num']) == num:
@@ -119,7 +123,7 @@ def change_workspace(num):
     switch_workspace(other_workspace['num'])
 
     # Focus on wanted workspace
-    switch_workspace(want_workspace['num'])
+    i3.command('focus', 'output', original_output)
 
 
 if __name__ == '__main__':
