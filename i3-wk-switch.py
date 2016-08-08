@@ -135,4 +135,4 @@ if __name__ == '__main__':
     try:
         change_workspace(sys.argv[1])
     except Exception as e:
-        LOG.error(e)
+        LOG.exception("An Error Occured")
