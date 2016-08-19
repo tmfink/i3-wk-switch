@@ -8,6 +8,7 @@ import logging
 import sys
 from pprint import pformat
 import i3
+import time
 
 
 LOG = logging.getLogger()
@@ -16,7 +17,7 @@ LOG = logging.getLogger()
 def setup_logger(level):
     """Initializes logger with debug level"""
     LOG.setLevel(logging.DEBUG)
-    channel = logging.StreamHandler(sys.stdout)
+    channel = logging.FileHandler("/tmp/i3-wk-switcher.log")
     channel.setLevel(level)
     formatter = logging.Formatter('[%(levelname)s] %(message)s')
     channel.setFormatter(formatter)
@@ -67,15 +68,14 @@ def change_workspace(num):
     Always sets focused output to workspace num. If the workspace is on
     another output, then the workspaces are "shifted" among the outputs.
     """
+
     # Allow for string or int type for argument
     num = int(num)
-    LOG.debug('Switching to workspace %d', num)
-
     focused_workspace = get_focused_workspace()
-    LOG.debug('Focused workspace:\n' + pformat(focused_workspace))
-
     original_output = focused_workspace['output']
-    LOG.debug('Current output: %s', original_output)
+
+    LOG.debug('Switching to workspace:{} on output:{}, display: {}:'.format(
+        num, focused_workspace['output'], pformat(focused_workspace, indent=2)))
 
     # Check if already on workspace
     if int(focused_workspace['num']) == num:
@@ -85,19 +85,19 @@ def change_workspace(num):
     # Get workspace we want to switch to
     want_workspace = get_workspace(num)
     if want_workspace is None:
-        LOG.debug('Switching to workspace because it does not exist')
+        LOG.debug('Switching to workspace because it does not exist, i3 will create it')
         switch_workspace(num)
         return
 
-    LOG.debug('Want workspace:\n' + pformat(want_workspace))
+    LOG.debug('Want workspace:\n' + pformat(want_workspace, indent=2))
 
     # Save workspace originally showing on want_workspace's output
     other_output = [outp for outp in get_active_outputs()
                     if outp['name'] == want_workspace['output']][0]
-    LOG.debug('Other_output=%s', other_output)
+    LOG.debug('Other_output=%s', pformat(other_output, indent=2))
     other_workspace = [wk for wk in i3.get_workspaces()
                        if wk['name'] == other_output['current_workspace']][0]
-    LOG.debug('Other workspace:\n' + pformat(other_workspace))
+    LOG.debug('Other workspace:\n' + pformat(other_workspace, indent=2))
 
 
     # Check if wanted workspace is on focused output
@@ -109,7 +109,7 @@ def change_workspace(num):
 
     # Check if wanted workspace is on other output
     if not want_workspace['visible']:
-        LOG.debug('Workspace to switch to is on other output, not showing')
+        LOG.debug('Workspace to switch to is hidden')
 
         # Switch to workspace on other output
         switch_workspace(num)
@@ -123,8 +123,9 @@ def change_workspace(num):
     switch_workspace(other_workspace['num'])
 
     # Focus on wanted workspace
+    time.sleep(.15)
+    LOG.debug('Setting focus to {}'.format(original_output))
     i3.command('focus', 'output', original_output)
-
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -132,4 +133,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     setup_logger(logging.DEBUG)
-    change_workspace(sys.argv[1])
+    try:
+        change_workspace(sys.argv[1])
+    except Exception:
+        LOG.exception('An error occured')
