@@ -22,8 +22,21 @@ keys are pressed.
 
 
 # Usage
+
 ```
-Usage: i3-wk-switch.py WORKSPACE_NUM
+usage: i3-wk-switch.py [-h] [--log-file LOG_FILE] [--verbose] WORKSPACE_NUM
+
+Switch i3 workspaces in the style of xmonad
+
+positional arguments:
+  WORKSPACE_NUM         Workspace number to which to switch
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --log-file LOG_FILE, -l LOG_FILE
+                        Path to file to which to log
+  --verbose, -v         Log to stderr
+
 ```
 
 
@@ -36,7 +49,7 @@ cd ~/.i3
 git clone https://github.com/tmfink/i3-wk-switch.git
 ```
 
-Add keybindings to ~/.i3/config
+Add keybindings to `~/.i3/config`
 
 ```
 # Switch to workspace like xmonad
@@ -51,4 +64,24 @@ bindsym $mod+7 $x_switch 7
 bindsym $mod+8 $x_switch 8
 bindsym $mod+9 $x_switch 9
 bindsym $mod+0 $x_switch 10
+```
+
+I also recommend adding fallback workspace switching, which is useful if you
+copy your i3 config to another computer that does not have the necessary
+dependencies (no Python support, no i3 module, etc.).
+
+Here is some fallback config that uses `Ctrl+$mod+NUM`:
+
+```
+# switch to workspace (fallback)
+bindsym Control+$mod+1 workspace 1
+bindsym Control+$mod+2 workspace 2
+bindsym Control+$mod+3 workspace 3
+bindsym Control+$mod+4 workspace 4
+bindsym Control+$mod+5 workspace 5
+bindsym Control+$mod+6 workspace 6
+bindsym Control+$mod+7 workspace 7
+bindsym Control+$mod+8 workspace 8
+bindsym Control+$mod+9 workspace 9
+bindsym Control+$mod+0 workspace 10
 ```
