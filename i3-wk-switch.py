@@ -2,28 +2,43 @@
 
 """Emulates xmonad's workspace switching behavior in i3"""
 
-# pylint: disable=no-member
+# pylint: disable=no-member,invalid-name
 
 from __future__ import print_function
 
+import argparse
 import logging
 import sys
 from pprint import pformat
-import i3
 import time
 
+import i3
 
-LOG = logging.getLogger()
+
+LOG = logging.getLogger('i3-wk-switch')
 
 
-def setup_logger(level):
+def setup_logger(level, log_file=None, log_stderr=True):
     """Initializes logger with debug level"""
     LOG.setLevel(logging.DEBUG)
-    channel = logging.FileHandler("/tmp/i3-wk-switcher.log")
-    channel.setLevel(level)
-    formatter = logging.Formatter('[%(levelname)s] %(message)s')
-    channel.setFormatter(formatter)
-    LOG.addHandler(channel)
+
+    formatter = logging.Formatter('[%(levelname)s] [%(asctime)s] %(message)s')
+    def add_logger(channel):
+        """Configure logger channel"""
+        channel.setLevel(level)
+        channel.setFormatter(formatter)
+        LOG.addHandler(channel)
+
+    if log_file is not None:
+        channel = logging.FileHandler(log_file)
+        add_logger(channel)
+
+    if log_stderr:
+        channel = logging.StreamHandler(sys.stderr)
+        add_logger(channel)
+
+    # Eliminate warning: No handlers could be found for logger
+    LOG.addHandler(logging.NullHandler())
 
 
 def get_focused_workspace():
@@ -44,10 +59,10 @@ def get_workspace(num):
                             if wk['num'] == num]
     assert len(want_workspace_cands) in [0, 1]
 
-    if len(want_workspace_cands) == 0:
+    if not want_workspace_cands:
         return None
-    else:
-        return want_workspace_cands[0]
+
+    return want_workspace_cands[0]
 
 
 def switch_workspace(num):
@@ -76,8 +91,9 @@ def change_workspace(num):
     focused_workspace = get_focused_workspace()
     original_output = focused_workspace['output']
 
-    LOG.debug('Switching to workspace:{} on output:{}, display: {}:'.format(
-        num, focused_workspace['output'], pformat(focused_workspace, indent=2)))
+    LOG.debug(
+        'Switching to workspace:%s on output:%s, display: %s:',
+        num, focused_workspace['output'], pformat(focused_workspace, indent=2))
 
     # Check if already on workspace
     if int(focused_workspace['num']) == num:
@@ -91,7 +107,7 @@ def change_workspace(num):
         switch_workspace(num)
         return
 
-    LOG.debug('Want workspace:\n' + pformat(want_workspace, indent=2))
+    LOG.debug('Want workspace:%s', pformat(want_workspace, indent=2))
 
     # Save workspace originally showing on want_workspace's output
     other_output = [outp for outp in get_active_outputs()
@@ -99,7 +115,7 @@ def change_workspace(num):
     LOG.debug('Other_output=%s', pformat(other_output, indent=2))
     other_workspace = [wk for wk in i3.get_workspaces()
                        if wk['name'] == other_output['current_workspace']][0]
-    LOG.debug('Other workspace:\n' + pformat(other_workspace, indent=2))
+    LOG.debug('Other workspace:%s', pformat(other_workspace, indent=2))
 
 
     # Check if wanted workspace is on focused output
@@ -126,16 +142,26 @@ def change_workspace(num):
 
     # Focus on wanted workspace
     time.sleep(.15)
-    LOG.debug('Setting focus to {}'.format(original_output))
+    LOG.debug('Setting focus to %s', original_output)
     i3.command('focus', 'output', original_output)
 
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print('Usage: %s WORKSPACE_NUM' % sys.argv[0])
-        sys.exit(1)
 
-    setup_logger(logging.DEBUG)
-    try:
-        change_workspace(sys.argv[1])
-    except Exception:
-        LOG.exception('An error occured')
+def main():
+    "Main"
+    parser = argparse.ArgumentParser(
+        description='Switch i3 workspaces in the style of xmonad')
+    parser.add_argument('workspace', metavar='WORKSPACE_NUM', type=int,
+                        help='Workspace number to which to switch')
+    parser.add_argument('--log-file', '-l', metavar='LOG_FILE',
+                        help='Path to file to which to log')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help='Log to stderr')
+    args = parser.parse_args()
+
+    setup_logger(
+        logging.DEBUG, log_file=args.log_file, log_stderr=args.verbose)
+    change_workspace(args.workspace)
+
+
+if __name__ == '__main__':
+    main()
