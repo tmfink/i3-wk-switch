@@ -4,6 +4,8 @@
 
 # pylint: disable=no-member
 
+from __future__ import print_function
+
 import logging
 import sys
 from pprint import pformat
@@ -129,7 +131,7 @@ def change_workspace(num):
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print 'Usage: %s WORKSPACE_NUM' % sys.argv[0]
+        print('Usage: %s WORKSPACE_NUM' % sys.argv[0])
         sys.exit(1)
 
     setup_logger(logging.DEBUG)
