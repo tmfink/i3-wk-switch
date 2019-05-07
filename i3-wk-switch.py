@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Emulates xmonad's workspace switching behavior in i3"""
+"""Emulates xmonad's workspace switching behavior in i3 and sway"""
 
 # pylint: disable=no-member,invalid-name
 
@@ -10,10 +10,10 @@ import argparse
 import logging
 import sys
 from pprint import pformat
+import i3ipc
 import time
 
-import i3
-
+i3 = i3ipc.Connection()
 
 LOG = logging.getLogger('i3-wk-switch')
 
@@ -67,15 +67,15 @@ def get_workspace(num):
 
 def switch_workspace(num):
     """Switches to workspace number"""
-    i3.workspace('number %d' % num)
+    i3.command('workspace %d' % num)
 
 
 def swap_visible_workspaces(wk_a, wk_b):
     """Swaps two workspaces that are visible"""
     switch_workspace(wk_a['num'])
-    i3.command('move', 'workspace to output ' + wk_b['output'])
+    i3.command('move workspace to output ' + wk_b['output'])
     switch_workspace(wk_b['num'])
-    i3.command('move', 'workspace to output ' + wk_a['output'])
+    i3.command('move workspace to output ' + wk_a['output'])
 
 
 def change_workspace(num):
