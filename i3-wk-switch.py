@@ -10,8 +10,9 @@ import argparse
 import logging
 import sys
 from pprint import pformat
-import i3ipc
 import time
+
+import i3ipc
 
 i3 = i3ipc.Connection()
 
