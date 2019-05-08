@@ -2,7 +2,7 @@
 
 """Emulates xmonad's workspace switching behavior in i3 and sway"""
 
-# pylint: disable=no-member,invalid-name
+# pylint: disable=no-member,invalid-name,too-many-function-args
 
 from __future__ import print_function
 
