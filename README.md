@@ -10,7 +10,7 @@ workspace and requested workspace will swap positions with each other.
 # Requirements
 
 - [i3 window manager](https://i3wm.org/)
-- [i3ipc](https://github.com/acrisci/i3ipc-python)
+- [i3ipc Python module](https://github.com/acrisci/i3ipc-python)
 
 
 # Install
@@ -47,6 +47,12 @@ Download script
 ```
 cd ~/.i3
 git clone https://github.com/tmfink/i3-wk-switch.git
+```
+
+Install i3ipc
+
+```
+pip install i3ipc
 ```
 
 Add keybindings to `~/.i3/config`
