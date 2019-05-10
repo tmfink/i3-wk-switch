@@ -1,16 +1,16 @@
 # Description
 
-Switches workspaces in the [i3 window manager](https://i3wm.org/) like xmonad.
-This script will always bring the requested workspace to the current monitor
-("output" in i3's terminology). If the requested workspace is showing on another
-monitor, then the current workspace and requested workspace will swap positions
-with each other.
+Switches workspaces in the [i3 window manager](https://i3wm.org/) and
+[sway](https://swaywm.org/) like xmonad. This script will always bring the
+requested workspace to the current monitor ("output" in i3's terminology). If
+the requested workspace is showing on another monitor, then the current
+workspace and requested workspace will swap positions with each other.
 
 
 # Requirements
 
 - [i3 window manager](https://i3wm.org/)
-- [i3-py](https://github.com/ziberna/i3-py)
+- [i3ipc Python module](https://github.com/acrisci/i3ipc-python)
 
 
 # Install
@@ -47,6 +47,12 @@ Download script
 ```
 cd ~/.i3
 git clone https://github.com/tmfink/i3-wk-switch.git
+```
+
+Install i3ipc
+
+```
+pip install i3ipc
 ```
 
 Add keybindings to `~/.i3/config`
