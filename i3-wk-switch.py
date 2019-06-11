@@ -137,7 +137,7 @@ def change_workspace(num):
         switch_workspace(num)
         move_workspace(original_output)
         return
-        
+
     LOG.debug('Wanted workspace is on other output')
 
     # Wanted workspace is visible, so swap workspaces
