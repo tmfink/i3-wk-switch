@@ -70,6 +70,9 @@ def switch_workspace(num):
     """Switches to workspace number"""
     i3.command('workspace %d' % num)
 
+def move_workspace(s):
+    """Move current workspace to output"""
+    i3.command('move workspace to output %s' % s)
 
 def swap_visible_workspaces(wk_a, wk_b):
     """Swaps two workspaces that are visible"""
@@ -132,6 +135,8 @@ def change_workspace(num):
 
         # Switch to workspace on other output
         switch_workspace(num)
+        move_workspace(original_output)
+        return
 
     LOG.debug('Wanted workspace is on other output')
 
@@ -144,7 +149,7 @@ def change_workspace(num):
     # Focus on wanted workspace
     time.sleep(.15)
     LOG.debug('Setting focus to %s', original_output)
-    i3.command('focus', 'output', original_output)
+    i3.command('focus output %s' % original_output)
 
 
 def main():
