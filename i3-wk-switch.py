@@ -45,20 +45,20 @@ def setup_logger(level, log_file=None, log_stderr=True):
 
 def get_focused_workspace():
     """Get workspace that is currently focused"""
-    actives = [wk for wk in i3.get_workspaces() if wk['focused']]
+    actives = [wk for wk in i3.get_workspaces() if wk.focused]
     assert len(actives) == 1
     return actives[0]
 
 
 def get_active_outputs():
     """Returns outputs (monitors) that are active"""
-    return [outp for outp in i3.get_outputs() if outp['active']]
+    return [outp for outp in i3.get_outputs() if outp.active]
 
 
 def get_workspace(num):
     """Returns workspace with num or None of it does not exist"""
     want_workspace_cands = [wk for wk in i3.get_workspaces()
-                            if wk['num'] == num]
+                            if wk.num == num]
     assert len(want_workspace_cands) in [0, 1]
 
     if not want_workspace_cands:
@@ -79,10 +79,10 @@ def move_workspace(s):
 
 def swap_visible_workspaces(wk_a, wk_b):
     """Swaps two workspaces that are visible"""
-    switch_workspace(wk_a['num'])
-    i3.command('move workspace to output %s' % wk_b['output'])
-    switch_workspace(wk_b['num'])
-    i3.command('move workspace to output %s' % wk_a['output'])
+    switch_workspace(wk_a.num)
+    i3.command('move workspace to output %s' % wk_b.output)
+    switch_workspace(wk_b.num)
+    i3.command('move workspace to output %s' % wk_a.output)
 
 
 def change_workspace(num):
@@ -96,14 +96,14 @@ def change_workspace(num):
     # Allow for string or int type for argument
     num = int(num)
     focused_workspace = get_focused_workspace()
-    original_output = focused_workspace['output']
+    original_output = focused_workspace.output
 
     LOG.debug(
         'Switching to workspace:%s on output:%s, display: %s:',
-        num, focused_workspace['output'], pformat(focused_workspace, indent=2))
+        num, focused_workspace.output, pformat(focused_workspace, indent=2))
 
     # Check if already on workspace
-    if int(focused_workspace['num']) == num:
+    if int(focused_workspace.num) == num:
         LOG.debug('Already on correct workspace')
         return
 
@@ -118,21 +118,21 @@ def change_workspace(num):
 
     # Save workspace originally showing on want_workspace's output
     other_output = [outp for outp in get_active_outputs()
-                    if outp['name'] == want_workspace['output']][0]
+                    if outp.name == want_workspace.output][0]
     LOG.debug('Other_output=%s', pformat(other_output, indent=2))
     other_workspace = [wk for wk in i3.get_workspaces()
-                       if wk['name'] == other_output['current_workspace']][0]
+                       if wk.name == other_output.current_workspace][0]
     LOG.debug('Other workspace:%s', pformat(other_workspace, indent=2))
 
     # Check if wanted workspace is on focused output
-    if focused_workspace['output'] == want_workspace['output']:
+    if focused_workspace.output == want_workspace.output:
         LOG.debug('Wanted workspace already on focused output, '
                   'switching as normal')
         switch_workspace(num)
         return
 
     # Check if wanted workspace is on other output
-    if not want_workspace['visible']:
+    if not want_workspace.visible:
         LOG.debug('Workspace to switch to is hidden')
 
         # Switch to workspace on other output
@@ -146,7 +146,7 @@ def change_workspace(num):
     swap_visible_workspaces(want_workspace, focused_workspace)
 
     # Focus other_workspace
-    switch_workspace(other_workspace['num'])
+    switch_workspace(other_workspace.num)
 
     # Focus on wanted workspace
     time.sleep(.15)
