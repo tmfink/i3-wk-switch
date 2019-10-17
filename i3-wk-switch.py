@@ -24,6 +24,7 @@ def setup_logger(level, log_file=None, log_stderr=True):
     LOG.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter('[%(levelname)s] [%(asctime)s] %(message)s')
+
     def add_logger(channel):
         """Configure logger channel"""
         channel.setLevel(level)
@@ -70,9 +71,11 @@ def switch_workspace(num):
     """Switches to workspace number"""
     i3.command('workspace %d' % num)
 
+
 def move_workspace(s):
     """Move current workspace to output"""
     i3.command('move workspace to output %s' % s)
+
 
 def swap_visible_workspaces(wk_a, wk_b):
     """Swaps two workspaces that are visible"""
@@ -120,7 +123,6 @@ def change_workspace(num):
     other_workspace = [wk for wk in i3.get_workspaces()
                        if wk['name'] == other_output['current_workspace']][0]
     LOG.debug('Other workspace:%s', pformat(other_workspace, indent=2))
-
 
     # Check if wanted workspace is on focused output
     if focused_workspace['output'] == want_workspace['output']:
