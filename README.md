@@ -20,6 +20,10 @@ Just download
 and modify your i3 config to call `i3-wk-switch.py` when the workspace switching
 keys are pressed.
 
+## Arch Linux
+[i3-wk-switch](https://aur.archlinux.org/packages/i3-wk-switch-git/) is on the AUR.
+This packages add `i3-wk-switch` to your `PATH` so the following bindings can be specified as `bindsym $mod+1 exec i3-wk-switch 1` and so on.
+
 
 # Usage
 
