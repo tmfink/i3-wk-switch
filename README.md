@@ -25,7 +25,7 @@ keys are pressed.
 
 [i3-wk-switch](https://aur.archlinux.org/packages/i3-wk-switch-git/) is on the AUR.
 This package adds `i3-wk-switch` to your `PATH` so you can specify bindings
-such as `bindsym $mod+1 exec i3-wk-switch 1`.
+such as `bindsym $mod+1 exec --no-startup-id i3-wk-switch 1`.
 
 
 # Usage
