@@ -138,6 +138,9 @@ def change_workspace(num):
         # Switch to workspace on other output
         switch_workspace(num)
         move_workspace(original_output)
+        time.sleep(.15)
+        LOG.debug('Setting focus to %s', original_output)
+        i3.command('focus output %s' % original_output)
         return
 
     LOG.debug('Wanted workspace is on other output')
