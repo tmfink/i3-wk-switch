@@ -66,7 +66,7 @@ Add keybindings to `~/.i3/config`
 
 ```
 # Switch to workspace like xmonad
-set $x_switch exec --no-startup-id ~/.i3/i3-wk-switch/i3-wk-switch.py
+set $x_switch exec --no-startup-id python3 ~/.i3/i3-wk-switch/i3-wk-switch.py
 bindsym $mod+1 $x_switch 1
 bindsym $mod+2 $x_switch 2
 bindsym $mod+3 $x_switch 3

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """Emulates xmonad's workspace switching behavior in i3 and sway"""
 
