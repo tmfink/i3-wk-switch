@@ -111,7 +111,8 @@ def change_workspace(num):
     # Get workspace we want to switch to
     want_workspace = get_workspace(num)
     if want_workspace is None:
-        LOG.debug('Switching to workspace because it does not exist, i3 will create it')
+        LOG.debug(
+            'Switching to workspace because it does not exist, i3 will create it')
         switch_workspace(num)
         return
 
