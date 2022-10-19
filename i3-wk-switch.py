@@ -56,10 +56,10 @@ def get_active_outputs():
     return [outp for outp in i3.get_outputs() if outp.active]
 
 
-def get_workspace(num):
-    """Returns workspace with num or None of it does not exist"""
+def get_workspace(workspace_name):
+    """Returns workspace with workspace_name or None of it does not exist"""
     want_workspace_cands = [wk for wk in i3.get_workspaces()
-                            if wk.num == num]
+                            if wk.name == workspace_name]
     assert len(want_workspace_cands) in [0, 1]
 
     if not want_workspace_cands:
@@ -68,9 +68,9 @@ def get_workspace(num):
     return want_workspace_cands[0]
 
 
-def switch_workspace(num):
-    """Switches to workspace number"""
-    i3.command('workspace %d' % num)
+def switch_workspace(workspace_name):
+    """Switches to workspace name"""
+    i3.command('workspace %s' % workspace_name)
 
 
 def move_workspace(s):
@@ -80,40 +80,38 @@ def move_workspace(s):
 
 def swap_visible_workspaces(wk_a, wk_b):
     """Swaps two workspaces that are visible"""
-    switch_workspace(wk_a.num)
+    switch_workspace(wk_a.name)
     i3.command('move workspace to output %s' % wk_b.output)
-    switch_workspace(wk_b.num)
+    switch_workspace(wk_b.name)
     i3.command('move workspace to output %s' % wk_a.output)
 
 
-def change_workspace(num):
+def change_workspace(workspace_name):
     """
-    Switches to workspace num like xmonad.
+    Switches to workspace workspace_name like xmonad.
 
-    Always sets focused output to workspace num. If the workspace is on
+    Always sets focused output to workspace workspace_name. If the workspace is on
     another output, then the workspaces are "shifted" among the outputs.
     """
 
-    # Allow for string or int type for argument
-    num = int(num)
     focused_workspace = get_focused_workspace()
     original_output = focused_workspace.output
 
     LOG.debug(
         'Switching to workspace:%s on output:%s, display: %s:',
-        num, focused_workspace.output, pformat(focused_workspace, indent=2))
+        workspace_name, focused_workspace.output, pformat(focused_workspace, indent=2))
 
     # Check if already on workspace
-    if int(focused_workspace.num) == num:
+    if focused_workspace.name == workspace_name:
         LOG.debug('Already on correct workspace')
         return
 
     # Get workspace we want to switch to
-    want_workspace = get_workspace(num)
+    want_workspace = get_workspace(workspace_name)
     if want_workspace is None:
         LOG.debug(
             'Switching to workspace because it does not exist, i3 will create it')
-        switch_workspace(num)
+        switch_workspace(workspace_name)
         return
 
     LOG.debug('Want workspace:%s', pformat(want_workspace, indent=2))
@@ -130,7 +128,7 @@ def change_workspace(num):
     if focused_workspace.output == want_workspace.output:
         LOG.debug('Wanted workspace already on focused output, '
                   'switching as normal')
-        switch_workspace(num)
+        switch_workspace(workspace_name)
         return
 
     # Check if wanted workspace is on other output
@@ -138,7 +136,7 @@ def change_workspace(num):
         LOG.debug('Workspace to switch to is hidden')
 
         # Switch to workspace on other output
-        switch_workspace(num)
+        switch_workspace(workspace_name)
         move_workspace(original_output)
         sleep_focus_output(original_output)
         return
@@ -149,7 +147,7 @@ def change_workspace(num):
     swap_visible_workspaces(want_workspace, focused_workspace)
 
     # Focus other_workspace
-    switch_workspace(other_workspace.num)
+    switch_workspace(other_workspace.name)
 
     # Focus on wanted workspace
     sleep_focus_output(original_output)
@@ -166,8 +164,8 @@ def main():
     "Main"
     parser = argparse.ArgumentParser(
         description='Switch i3 workspaces in the style of xmonad')
-    parser.add_argument('workspace', metavar='WORKSPACE_NUM', type=int,
-                        help='Workspace number to which to switch')
+    parser.add_argument('workspace', metavar='WORKSPACE_NAME',
+                        help='Workspace to which to switch')
     parser.add_argument('--log-file', '-l', metavar='LOG_FILE',
                         help='Path to file to which to log')
     parser.add_argument('--verbose', '-v', action='store_true',
